@@ -1,0 +1,178 @@
+// Reference: https://github.com/fastfetch-cli/fastfetch/wiki/Configuration
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  // ── Logo ────────────────────────────────────────────────────────────────
+  "logo": {
+    "source": "arch",
+    "padding": {
+      "top": 1,
+      "left": 2,
+      "right": 4
+    }
+  },
+
+  // ── General appearance ──────────────────────────────────────────────────
+  "display": {
+    // Separator between key and value. Since the key already carries an icon,
+    // two spaces read better than the default colon.
+    "separator": "  ",
+
+    "color": {
+      "keys": "blue",
+      "title": "magenta"
+    },
+
+    // Aligns every value in the same column.
+    "key": {
+      "width": 13
+    },
+
+    // Percentage bars (memory, disk, battery).
+    //   9  colored number (green/yellow/red depending on usage)
+    //   3  number plus bar
+    "percent": {
+      "type": 3,
+      "ndigits": 0
+    },
+
+    "bar": {
+      "char": {
+        "elapsed": "━",
+        "total": "─"
+      },
+      "border": {
+        "left": " ",
+        "right": ""
+      },
+      "width": 12
+    },
+
+    "size": {
+      "ndigits": 1
+    }
+  },
+
+  // ── Modules: the order here is the order on screen ──────────────────────
+  // "break" inserts a blank line, which is how the groups are separated.
+  "modules": [
+    "break",
+
+    // ── Header ────────────────────────────────────────────────────────────
+    {
+      "type": "title",
+      // The `-colored` variants give each part fastfetch's own color.
+      "format": "{user-name-colored}{at-symbol-colored}{host-name-colored}"
+    },
+    {
+      "type": "separator",
+      "string": "─"
+    },
+
+    // ── System ────────────────────────────────────────────────────────────
+    {
+      "type": "os",
+      "key": "󰣇 OS",
+      "keyColor": "blue"
+    },
+    {
+      "type": "kernel",
+      "key": " Kernel",
+      "keyColor": "blue"
+    },
+    {
+      "type": "uptime",
+      "key": "󰅐 Uptime",
+      "keyColor": "blue"
+    },
+    {
+      "type": "packages",
+      "key": "󰏖 Packages",
+      "keyColor": "blue"
+    },
+    {
+      "type": "shell",
+      "key": " Shell",
+      "keyColor": "blue"
+    },
+
+    "break",
+
+    // ── Graphical environment ─────────────────────────────────────────────
+    {
+      "type": "wm",
+      "key": " WM",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "display",
+      "key": "󰍹 Display",
+      "keyColor": "magenta",
+      // Show the refresh rate, which matters with 240/165/240 Hz screens.
+      "compactType": "original-with-refresh-rate"
+    },
+    {
+      "type": "terminal",
+      "key": " Terminal",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "terminalfont",
+      "key": " Font",
+      "keyColor": "magenta"
+    },
+
+    "break",
+
+    // ── Hardware ──────────────────────────────────────────────────────────
+    {
+      "type": "cpu",
+      "key": "󰻠 CPU",
+      "keyColor": "cyan",
+      "showPeCoreCount": true,
+      "temp": true
+    },
+    {
+      "type": "gpu",
+      "key": "󰢮 GPU",
+      "keyColor": "cyan",
+      "driverSpecific": true
+    },
+    {
+      "type": "memory",
+      "key": "󰍛 Memory",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "swap",
+      "key": "󰓡 Swap",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "disk",
+      "key": "󰋊 Disk",
+      "keyColor": "cyan",
+      // Root only. Without this it lists every mount point, Docker's included,
+      // and the output becomes a wall of text.
+      "folders": "/"
+    },
+    {
+      "type": "battery",
+      "key": "󰁹 Battery",
+      "keyColor": "cyan"
+    },
+
+    "break",
+
+    // ── Palette ───────────────────────────────────────────────────────────
+    // The colored blocks in the footer. They double as a quick check: if these
+    // colors are not the theme's, the terminal theme did not load.
+    {
+      "type": "colors",
+      "symbol": "circle",
+      "paddingLeft": 2
+    },
+
+    "break"
+  ]
+}

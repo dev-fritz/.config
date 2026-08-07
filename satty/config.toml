@@ -1,0 +1,85 @@
+# satty, the screenshot editor.
+#
+# It replaced swappy: cleaner interface, real undo/redo, rounded corners on
+# shapes and a configurable palette. Called by
+# ~/.config/hypr/scripts/screenshot.sh (SUPER + P).
+#
+# Keys inside satty:
+#   1..9 or click     pick a tool from the toolbar
+#   Ctrl+Z / Ctrl+Y   undo / redo
+#   Ctrl+C            copy
+#   Ctrl+S            save
+#   Enter             copy and quit
+#   Esc               quit
+#
+# The [color-palette] section is rewritten by ~/.config/theme/apply.py on every
+# theme switch. Do not edit between the markers.
+
+[general]
+# Open windowed rather than fullscreen: Hyprland already floats the window over
+# the screenshot (see the rule in conf/windowrules.lua).
+fullscreen = false
+
+# Fit the window to the image size instead of opening huge.
+resize = { mode = "smart" }
+
+# Ask the compositor to keep the window floating.
+floating-hack = true
+
+# Quit automatically after copying or saving. This is what keeps the flow fast:
+# capture, annotate, Ctrl+C, and the window disappears on its own.
+early-exit = ["copy", "save"]
+
+# Rounded corners on rectangles, matching the rest of the desktop.
+corner-roundness = 12
+
+# Tool selected on open. The arrow is the one most used for pointing at
+# something in a screenshot.
+initial-tool = "arrow"
+
+# How to copy. wl-copy is the Wayland one.
+copy-command = "wl-copy"
+
+# Annotation size. 2 keeps arrows and text readable on a 1600p screen.
+annotation-size-factor = 2
+
+# Where Ctrl+S saves. The same folder the script uses.
+output-filename = "~/Images/Screenshots/%Y-%m-%d_%H-%M-%S.png"
+
+# Toolbars visible on open.
+default-hide-toolbars = false
+
+# Shapes are outlined by default, not filled.
+default-fill-shapes = false
+
+# Block highlighter, like a real marker pen.
+primary-highlighter = "block"
+
+# Enter copies and quits; Esc quits without copying.
+actions-on-enter = ["save-to-clipboard", "exit"]
+actions-on-escape = ["exit"]
+
+[font]
+family = "SpaceMono Nerd Font"
+style = "Regular"
+
+# >>> CORES
+[color-palette]
+palette = [
+    "#f38ba8ff",
+    "#fab387ff",
+    "#f9e2afff",
+    "#a6e3a1ff",
+    "#89b4faff",
+    "#cba6f7ff",
+    "#cdd6f4ff",
+]
+custom = [
+    "#f5e0dcff",
+    "#f5c2e7ff",
+    "#94e2d5ff",
+    "#89dcebff",
+    "#b4befeff",
+    "#11111bff",
+]
+# <<< CORES

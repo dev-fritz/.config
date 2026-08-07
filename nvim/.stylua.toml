@@ -1,0 +1,11 @@
+# Formatting for this config itself, applied on save via conform.nvim.
+column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 2
+quote_style = "AutoPreferDouble"
+# "Always" keeps `setup({ … })` instead of `setup { … }`, which is more predictable.
+call_parentheses = "Always"
+# "FunctionOnly" keeps `function() Snacks.picker.files() end` on one line, which
+# is what keeps the `keys = { … }` tables readable.
+collapse_simple_statement = "FunctionOnly"
