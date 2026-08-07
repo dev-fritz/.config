@@ -1,0 +1,387 @@
+// Waybar configuration.
+//
+// The format is JSONC: JSON with // comments and trailing commas allowed.
+// Each module is documented in `man waybar-<module>`, for example
+// `man waybar-battery` or `man waybar-hyprland-workspaces`.
+//
+// This defines ONE bar. Since there is no "output" key, Waybar replicates it on
+// every connected monitor and adds or removes bars automatically as screens are
+// plugged in or unplugged.
+//
+// After editing, run `killall -SIGUSR2 waybar` to reload without restarting.
+{
+  // ── Bar geometry ─────────────────────────────────────────────────────────
+  "layer": "top", // above windows, but below menus and popups
+  "position": "top",
+  "height": 38, // height of the strip; the islands sit inside it
+  "spacing": 0, // module spacing comes from the CSS, not from here
+  "margin-top": 6, // the margin that creates the floating effect
+  "margin-left": 10,
+  "margin-right": 10,
+  "reload_style_on_change": true, // saving style.css applies it immediately
+
+  // ── Module placement ─────────────────────────────────────────────────────
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/submap",
+    "hyprland/window",
+  ],
+
+  "modules-center": [
+    "clock",
+    "custom/weather",
+  ],
+
+  "modules-right": [
+    "mpris",
+    "group/system",
+    "group/controls",
+    "group/connectivity",
+    "battery",
+    "custom/notification",
+    "tray",
+    "custom/power",
+  ],
+
+  // ── Left ─────────────────────────────────────────────────────────────────
+
+  // Hyprland workspaces. `all-outputs: false` means each bar shows only the
+  // workspaces of its own monitor, which is what makes sense with three
+  // screens: the DP-1 bar isn't cluttered with eDP-1's workspaces.
+  "hyprland/workspaces": {
+    "all-outputs": false,
+    "show-special": true, // show the special (scratchpad) workspace
+    "on-click": "activate",
+    // Since Hyprland 0.5x the config is Lua and `hyprctl dispatch` evaluates a
+    // Lua expression, so the old `hyprctl dispatch workspace e+1` form is a
+    // parse error and the scroll silently does nothing. This is the same
+    // dispatcher the SUPER+scroll keybind uses (see hypr/conf/keybinds.lua).
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "special": "󰐃",
+      "urgent": "󰀦",
+      "default": "󰧞",
+    },
+    // "persistent-workspaces" is deliberately not used here.
+    //
+    // Workspaces 1, 2 and 3 already have a home screen and stay alive when
+    // empty — that comes from the `persistent` workspace rules in
+    // hypr/conf/monitors.lua, so Waybar needs no help to keep drawing them.
+    //
+    // Workspaces 4 to 10 are intentionally free: they open wherever focus is.
+    // Listing them here would force every bar to draw ten numbers, including
+    // the ones sitting on another screen — which is exactly what
+    // `all-outputs: false` is avoiding.
+    //
+    // If you ever dedicate a fixed range to each monitor, mirror it here:
+    //   "persistent-workspaces": { "eDP-1": [1,2,3], "DP-1": [4,5,6], "HDMI-A-1": [7,8,9] }
+  },
+
+  // Name of the active submap (a Hyprland key mode). It stays invisible when
+  // no submap is active, so it never gets in the way.
+  "hyprland/submap": {
+    "format": "󰌌 {}",
+    "tooltip": false,
+  },
+
+  // Title of the focused window.
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 60,
+    "separate-outputs": true, // each bar shows its own monitor's window
+    "icon": true,
+    "icon-size": 16,
+    "rewrite": {
+      // Trims verbose titles. The key is a regex (std::regex syntax).
+      "(.*) — Mozilla Firefox": "󰈹 $1",
+      "(.*) - Chromium": " $1",
+      "(.*) - Visual Studio Code": "󰨞 $1",
+      "(.*) - NVIM": " $1",
+      "": "󰇄 desktop", // no focused window
+    },
+  },
+
+  // ── Center ───────────────────────────────────────────────────────────────
+
+  // Clock. The tooltip shows a browsable calendar; scrolling changes the month.
+  "clock": {
+    "interval": 1,
+    "format": "{:%H:%M}",
+    "format-alt": "{:%a, %d %b}", // clicking switches between time and date
+    "tooltip-format": "<span size='11pt' font='SpaceMono Nerd Font'>{calendar}</span>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#f9e2af'><b>{}</b></span>",
+        "days": "<span color='#cdd6f4'>{}</span>",
+        "weeks": "<span color='#94e2d5'><b>W{}</b></span>",
+        "weekdays": "<span color='#fab387'><b>{}</b></span>",
+        "today": "<span color='#f38ba8'><b><u>{}</u></b></span>",
+      },
+    },
+    "actions": {
+      "on-click-right": "mode", // switch the calendar between month and year
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down",
+    },
+  },
+
+  // Weather, from scripts/weather.py, which uses wttr.in and needs no account.
+  // See the script header to change the city or the units.
+  "custom/weather": {
+    "exec": "$HOME/.config/waybar/scripts/weather.py",
+    "return-type": "json",
+    "interval": 900, // 15 min; the script also has its own cache
+    "format": "{}",
+    "tooltip": true,
+    "on-click": "xdg-open https://wttr.in",
+  },
+
+  // ── Right ────────────────────────────────────────────────────────────────
+
+  // Media player (MPRIS). A native Waybar module; this build links
+  // libplayerctl, so no script is needed.
+  "mpris": {
+    "format": "{status_icon} {dynamic}",
+    "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "dynamic-len": 38,
+    "dynamic-order": ["title", "artist"],
+    "dynamic-separator": " · ",
+    "status-icons": {
+      "playing": "󰐊",
+      "paused": "󰏤",
+      "stopped": "󰓛",
+    },
+    // Players to ignore. Firefox is deliberately left out, since most media
+    // comes from there (YouTube and so on). Add ["firefox"] if it starts
+    // showing duplicate players.
+    "ignored-players": [],
+    "tooltip-format": "{player}\n{title}\n{artist}\n{album}",
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-click-middle": "playerctl previous",
+    "on-scroll-up": "playerctl position 5+",
+    "on-scroll-down": "playerctl position 5-",
+  },
+
+  // ── Group: system resources (drawer) ─────────────────────────────────────
+  // Only the temperature is visible; hovering slides the others out, keeping
+  // the data at hand without cluttering the bar.
+  "group/system": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 300,
+      "transition-left-to-right": false, // opens to the left
+      "children-class": "system-item",
+    },
+    "modules": [
+      "temperature", // visible; the rest is the drawer
+      "cpu",
+      "memory",
+      "disk",
+    ],
+  },
+
+  "temperature": {
+    // Sensor for the i9-12900HX; coretemp's "Package id 0" is the whole CPU
+    // package temperature.
+    //
+    // `hwmon-path-abs` plus `input-filename` is used instead of pointing at
+    // /sys/class/hwmon/hwmonN/ because that N is assigned in driver load order
+    // and changes between reboots — it might be hwmon8 today and something
+    // else tomorrow, leaving the bar showing the battery or NVMe temperature.
+    // The path below belongs to the device itself, so it stays put.
+    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+    "input-filename": "temp1_input",
+    "critical-threshold": 85,
+    "interval": 5,
+    "format": "{icon} {temperatureC}°C",
+    "format-critical": "󰸁 {temperatureC}°C",
+    "format-icons": ["󰜢", "󰔏", "󰸁"],
+    "tooltip-format": "CPU at {temperatureC}°C ({temperatureF}°F)",
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": "󰻠 {usage}%",
+    "tooltip": true,
+    "on-click": "$HOME/.config/waybar/scripts/launch.sh --terminal 'top' btop htop",
+  },
+
+  "memory": {
+    "interval": 10,
+    "format": "󰍛 {percentage}%",
+    "tooltip-format": "RAM: {used:0.1f}G of {total:0.1f}G\nSwap: {swapUsed:0.1f}G of {swapTotal:0.1f}G",
+    "on-click": "$HOME/.config/waybar/scripts/launch.sh --terminal 'top' btop htop",
+  },
+
+  "disk": {
+    "interval": 60,
+    "path": "/",
+    "format": "󰋊 {percentage_used}%",
+    "tooltip-format": "Disk /: {used} used of {total} ({free} free)",
+  },
+
+  // ── Group: output controls ───────────────────────────────────────────────
+  "group/controls": {
+    "orientation": "horizontal",
+    "modules": ["pulseaudio", "backlight"],
+  },
+
+  // Audio. The `pulseaudio` module talks to PipeWire through the compatibility
+  // layer and, unlike `wireplumber`, can tell a Bluetooth output apart — useful
+  // here, since the default sink is a BT headset. The click actions use `wpctl`
+  // (wireplumber), the same commands the Hyprland keybinds use.
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 muted",
+    "format-bluetooth": "󰂰 {volume}%",
+    "format-bluetooth-muted": "󰂲 muted",
+    "format-source": " {volume}%",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphone": "󰋋",
+      "headset": "󰋎",
+      "hands-free": "󰋎",
+      "speaker": "󰓃",
+      "hdmi": "󰡁",
+      "default": ["󰕿", "󰖀", "󰕾"],
+    },
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    // No graphical mixer is installed yet, so launch.sh falls back to
+    // `wpctl status` in a terminal instead of the click doing nothing.
+    "on-click-right": "$HOME/.config/waybar/scripts/launch.sh --terminal 'wpctl status' pavucontrol pwvucontrol wiremix",
+    "tooltip-format": "{desc}\nVolume: {volume}%",
+  },
+
+  // Screen brightness. The device is `nvidia_0` (NVIDIA laptop).
+  "backlight": {
+    "device": "nvidia_0",
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃞", "󰃟", "󰃠"],
+    "scroll-step": 5,
+    "on-scroll-up": "brightnessctl -e4 -n2 set 5%+",
+    "on-scroll-down": "brightnessctl -e4 -n2 set 5%-",
+    "tooltip-format": "Brightness: {percent}%",
+  },
+
+  // ── Group: connectivity ──────────────────────────────────────────────────
+  "group/connectivity": {
+    "orientation": "horizontal",
+    "modules": ["bluetooth", "network"],
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "format-connected": "󰂱 {num_connections}",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "on-click": "$HOME/.config/waybar/scripts/launch.sh --terminal 'bluetoothctl' blueman-manager overskride",
+    "on-click-right": "bluetoothctl power off",
+  },
+
+  // Network. Pinning `interface` to wlo1 would stop Docker interfaces
+  // (docker0, br-*) from taking over the display; this stays automatic but
+  // gives each state its own format.
+  "network": {
+    "interval": 5,
+    "format-wifi": "{icon} {essid}",
+    "format-ethernet": "󰈀 {ipaddr}",
+    "format-linked": "󰈀 no IP",
+    "format-disconnected": "󰤮 offline",
+    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBits}  󰕒 {bandwidthUpBits}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}/{cidr}\n󰇚 {bandwidthDownBits}  󰕒 {bandwidthUpBits}",
+    "tooltip-format-disconnected": "No connection",
+    "max-length": 22,
+    "on-click": "$HOME/.config/waybar/scripts/launch.sh --terminal 'nmtui' nm-connection-editor",
+  },
+
+  // Battery. `warning` and `critical` trigger the CSS classes of the same name.
+  "battery": {
+    "interval": 10,
+    "states": {
+      "good": 80,
+      "warning": 30,
+      "critical": 15,
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰚥 {capacity}%",
+    "format-full": "󰁹 full",
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "tooltip-format": "{timeTo}\nHealth: {health}%\nDraw: {power}W",
+  },
+
+  // ── Notification center (swaync) ─────────────────────────────────────────
+  //
+  // `swaync-client -swb` keeps running and emits a line of JSON every time the
+  // state changes (a notification arrived, do-not-disturb was toggled). That's
+  // why there is no "interval": the module is fed by the stream, not by polling.
+  //
+  // `exec-if` is what holds it together: if swaync isn't installed the command
+  // fails and Waybar simply doesn't draw the module, with no broken icon and no
+  // error in the log.
+  //
+  // Install with `sudo pacman -S swaync`; config lives in ~/.config/swaync/.
+  "custom/notification": {
+    "exec-if": "command -v swaync-client",
+    "exec": "swaync-client -swb",
+    "return-type": "json",
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "󰂚",
+      "none": "󰂜",
+      "dnd-notification": "󰂛",
+      "dnd-none": "󰂛",
+      "inhibited-notification": "󰂚",
+      "inhibited-none": "󰂜",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰂛",
+    },
+    "tooltip": true,
+    "escape": true,
+    "on-click": "swaync-client -t -sw", // toggle the notification center
+    "on-click-right": "swaync-client -d -sw", // toggle do-not-disturb
+  },
+
+  // ── Power button (wlogout) ───────────────────────────────────────────────
+  //
+  // wlogout comes from the AUR (`paru -S wlogout`). Until it is installed,
+  // launch.sh avoids a dead click by falling back to `systemctl` in a terminal,
+  // where you pick the action by hand.
+  //
+  // Button layout and theme live in ~/.config/wlogout/.
+  "custom/power": {
+    "format": "󰐥",
+    "tooltip": true,
+    "tooltip-format": "Lock · logout · suspend · reboot · shutdown",
+    "on-click": "$HOME/.config/waybar/scripts/launch.sh --terminal 'echo \"Options: systemctl suspend | systemctl reboot | systemctl poweroff | hyprctl dispatch hl.dsp.exit()\"' wlogout wleave",
+  },
+
+  // System tray (Discord, Steam, Nextcloud).
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8,
+    "show-passive-items": true,
+  },
+}

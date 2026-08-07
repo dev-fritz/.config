@@ -1,0 +1,130 @@
+/* rofi "gallery" theme: a horizontal strip.
+ *
+ * Used by the wallpaper and theme pickers. A band across the screen with large
+ * upright thumbnails and a name under each one; the selected item gets a light
+ * card behind it.
+ *
+ * The key piece is `flow: horizontal` on the listview together with `lines: 1`.
+ * Without it rofi stacks the items in a column no matter how many columns are
+ * configured.
+ *
+ * Usage: rofi -dmenu -show-icons -theme gallery
+ */
+
+@import "colors"
+
+* {
+    fundo:         @crust;
+    cartao:        @surface0;
+    texto:         @text;
+    texto-fraco:   @overlay1;
+    selecao:       @lavender;
+    selecao-texto: @crust;
+
+    background-color: transparent;
+    text-color:       @texto;
+    font:             "SpaceMono Nerd Font 10";
+}
+
+/* ── The strip ───────────────────────────────────────────────────────────── */
+window {
+    transparency:     "real";   /* lets the Hyprland blur show through */
+    location:         center;
+    anchor:           center;
+    width:            100%;
+    /* No border and no corners: the strip spans the screen edge to edge. */
+    border:           0;
+    border-radius:    0;
+    background-color: rgba(17, 17, 27, 0.88);
+    padding:          0;
+    children:         [ mainbox ];
+}
+
+mainbox {
+    padding:  0;
+    spacing:  0;
+    children: [ inputbar, listview ];
+}
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+/* Kept discreet: a thin line at the top of the strip. You can type to filter,
+   but it doesn't steal attention from the images. */
+inputbar {
+    background-color: transparent;
+    padding:          14px 28px 0px 28px;
+    spacing:          10px;
+    children:         [ prompt, entry, case-indicator ];
+}
+
+prompt {
+    text-color:     @selecao;
+    vertical-align: 0.5;
+}
+
+entry {
+    placeholder:       "filtrar…";
+    placeholder-color: @texto-fraco;
+    vertical-align:    0.5;
+    cursor:            text;
+}
+
+/* ── The row ─────────────────────────────────────────────────────────────── */
+listview {
+    /* This is what makes the row horizontal. */
+    flow:         horizontal;
+    lines:        1;
+    columns:      6;
+
+    fixed-height: true;
+    fixed-columns: true;
+    scrollbar:    false;      /* scrolling happens via the arrow keys or typing */
+    cycle:        true;
+    spacing:      22px;
+    padding:      24px 34px 30px 34px;
+    background-color: transparent;
+}
+
+/* Each cell: thumbnail on top, name below. */
+element {
+    orientation:   vertical;
+    padding:       10px;
+    spacing:       10px;
+    border-radius: 14px;
+    cursor:        pointer;
+    background-color: transparent;
+}
+
+/* The light card behind the selected item. */
+element selected.normal {
+    background-color: rgba(205, 214, 244, 0.22);
+}
+
+element-icon {
+    /* Portrait: taller than wide, matching the generated thumbnails. */
+    size:          340px;
+    border-radius: 12px;
+    cursor:        inherit;
+    background-color: transparent;
+}
+
+element-text {
+    horizontal-align: 0.5;
+    vertical-align:   0.5;
+    text-color:       @texto-fraco;
+    cursor:           inherit;
+}
+
+element selected.normal element-text {
+    text-color: @texto;
+}
+
+/* ── Message footer (the -mesg passed by the scripts) ────────────────────── */
+message {
+    background-color: transparent;
+    padding:          0px 28px 10px 28px;
+}
+
+textbox {
+    text-color:     @texto-fraco;
+    vertical-align: 0.5;
+}

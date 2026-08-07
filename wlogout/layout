@@ -1,0 +1,30 @@
+{
+    "label": "lock",
+    "action": "$HOME/.config/waybar/scripts/launch.sh --terminal 'loginctl lock-session' hyprlock swaylock gtklock",
+    "text": "Lock",
+    "keybind": "l"
+}
+{
+    "label": "logout",
+    "action": "hyprctl dispatch 'hl.dsp.exit()'",
+    "text": "Logout",
+    "keybind": "o"
+}
+{
+    "label": "suspend",
+    "action": "systemctl suspend",
+    "text": "Suspend",
+    "keybind": "s"
+}
+{
+    "label": "reboot",
+    "action": "systemctl reboot",
+    "text": "Reboot",
+    "keybind": "r"
+}
+{
+    "label": "shutdown",
+    "action": "systemctl poweroff",
+    "text": "Shutdown",
+    "keybind": "d"
+}

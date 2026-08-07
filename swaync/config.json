@@ -1,0 +1,114 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+
+  "//": [
+    "SwayNotificationCenter: the notification daemon plus a control center.",
+    "",
+    "This file is plain JSON and accepts no comments, so the documentation lives",
+    "in these '//' keys, which swaync ignores.",
+    "",
+    "Validate after editing:  swaync -c ~/.config/swaync/config.json",
+    "Reload without restarting:  swaync-client -R && swaync-client -rs",
+    "",
+    "The center opens from the bell icon in Waybar, or with: swaync-client -t -sw"
+  ],
+
+  "//position": [
+    "Corner where the notifications and the center appear. The bar sits at the",
+    "top with the bell on the right, so the center opens just below it.",
+    "The margin-top of 44 is the bar height (38) plus its margin (6)."
+  ],
+  "positionX": "right",
+  "positionY": "top",
+  "control-center-positionX": "right",
+  "control-center-positionY": "top",
+  "control-center-margin-top": 44,
+  "control-center-margin-bottom": 12,
+  "control-center-margin-right": 12,
+  "control-center-margin-left": 0,
+
+  "//layers": [
+    "'overlay' puts notifications above even fullscreen windows, so a warning",
+    "is not missed while gaming or watching something."
+  ],
+  "layer": "overlay",
+  "control-center-layer": "top",
+  "layer-shell": true,
+  "cssPriority": "user",
+
+  "//sizes": "Width of the center and of individual notifications, in pixels.",
+  "control-center-width": 440,
+  "control-center-height": 640,
+  "notification-window-width": 420,
+  "notification-icon-size": 48,
+  "notification-body-image-height": 120,
+  "notification-body-image-width": 220,
+
+  "//timeouts": [
+    "Seconds until a notification disappears on its own.",
+    "'critical' uses timeout 0, meaning it stays until you interact. That is",
+    "right: a dying battery or a disk failure must not vanish by itself."
+  ],
+  "timeout": 8,
+  "timeout-low": 5,
+  "timeout-critical": 0,
+
+  "//behavior": "",
+  "fit-to-screen": false,
+  "keyboard-shortcuts": true,
+  "image-visibility": "when-available",
+  "transition-time": 200,
+  "hide-on-clear": false,
+  "hide-on-action": true,
+  "script-fail-notify": true,
+
+  "//widgets": [
+    "Order of the blocks inside the control center, top to bottom.",
+    "Remove what you don't use; the order here is the order on screen.",
+    "  title         header with the clear-all button",
+    "  dnd           do-not-disturb switch",
+    "  mpris         media controls with album art",
+    "  volume        volume slider, with a per-output list when expanded",
+    "  backlight     brightness slider",
+    "  notifications the notification list itself"
+  ],
+  "widgets": [
+    "title",
+    "dnd",
+    "mpris",
+    "volume",
+    "backlight",
+    "notifications"
+  ],
+
+  "widget-config": {
+    "title": {
+      "text": "Notifications",
+      "clear-all-button": true,
+      "button-text": "󰎟  Clear all"
+    },
+    "dnd": {
+      "text": "Do not disturb"
+    },
+    "mpris": {
+      "image-size": 88,
+      "image-radius": 12
+    },
+    "volume": {
+      "label": "󰕾",
+      "show-per-app": true,
+      "show-per-app-icon": true,
+      "show-per-app-label": false,
+      "expand-button-label": "󰅀",
+      "collapse-button-label": "󰅃"
+    },
+    "backlight": {
+      "label": "󰃠",
+      "//device": [
+        "The same device Waybar uses: a laptop with an NVIDIA GPU.",
+        "Check the name with: ls /sys/class/backlight/"
+      ],
+      "device": "nvidia_0"
+    }
+  }
+}
