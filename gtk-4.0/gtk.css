@@ -1,0 +1,36 @@
+/* ╭──────────────────────────────────────────────────────────────────────────╮
+   │  GTK 4 / libadwaita — folha de estilo do usuário                         │
+   │                                                                          │
+   │  POR QUE ESTE ARQUIVO EXISTE, SE O GTK3 NÃO TEM MAIS UM                  │
+   │                                                                          │
+   │    Apps GTK3 pegam as cores de um TEMA gerado em                         │
+   │    ~/.local/share/themes/Tema-<variante>/. Apps libadwaita, não:         │
+   │    a libadwaita IGNORA `gtk-theme-name` de propósito. O único ponto      │
+   │    de recolorização que ela respeita é este arquivo aqui, mais o         │
+   │    `color-scheme` do gsettings (claro/escuro), que o apply.py também     │
+   │    ajusta.                                                               │
+   │                                                                          │
+   │    Ou seja: aqui só entram os NOMES de cor da libadwaita. Nada de        │
+   │    regra genérica de widget.                                             │
+   │                                                                          │
+   │  CUIDADO COM SELETOR GENÉRICO                                            │
+   │    Esta folha é carregada com prioridade de USUÁRIO (800), acima até     │
+   │    do CSS do próprio aplicativo. Uma regra do tipo                       │
+   │        box.horizontal { background-color: …; }                           │
+   │    parece inofensiva e atinge TODO GtkBox de TODO app GTK4 — inclusive   │
+   │    barras e painéis que dependem de fundo transparente. Foi exatamente   │
+   │    esse tipo de regra, no antigo gtk-3.0/gtk.css, que deixava a Waybar   │
+   │    opaca e escondia o número do workspace. Se precisar estilizar um app  │
+   │    específico, use o nome/classe dele — nunca o widget cru.              │
+   │                                                                          │
+   │    Para descobrir os widgets de um app GTK4:                             │
+   │        GTK_DEBUG=interactive <app>                                       │
+   │                                                                          │
+   │  colors.css é GERADO por ~/.config/theme/apply.py a partir do            │
+   │  palettes.py. Não edite lá; edite o palettes.py.                         │
+   │                                                                          │
+   │  Depois de trocar de tema: apps libadwaita já abertos mudam de           │
+   │  claro/escuro na hora, mas só pegam as cores novas ao reabrir.           │
+   ╰──────────────────────────────────────────────────────────────────────────╯ */
+
+@import url("colors.css");

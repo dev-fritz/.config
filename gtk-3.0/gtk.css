@@ -1,0 +1,38 @@
+/* ╭──────────────────────────────────────────────────────────────────────────╮
+   │  GTK 3 — folha de estilo do usuário                                      │
+   │                                                                          │
+   │  ESTE ARQUIVO ESTÁ VAZIO DE PROPÓSITO. Não escreva regras aqui.          │
+   │                                                                          │
+   │  O visual dos apps GTK3 mora num TEMA DE VERDADE, gerado por             │
+   │  ~/.config/theme/apply.py em:                                            │
+   │                                                                          │
+   │      ~/.local/share/themes/Tema-<variante>/gtk-3.0/gtk.css               │
+   │                                                                          │
+   │  POR QUE NÃO AQUI                                                        │
+   │                                                                          │
+   │    1. PRIORIDADE. O GTK empilha as folhas de estilo nesta ordem:         │
+   │                                                                          │
+   │         tema         200   ← o arquivo gerado                            │
+   │         settings     400                                                 │
+   │         aplicativo   600                                                 │
+   │         usuário      800   ← ESTE arquivo                                │
+   │                                                                          │
+   │       Regra escrita aqui ganha até do CSS do próprio aplicativo. Esta    │
+   │       folha já teve um `box.horizontal { background-color: … }` pensado  │
+   │       para a barra de ferramentas do swappy — e, como a Waybar também    │
+   │       é GTK3 e também usa GtkBox, a regra pintava a barra inteira de     │
+   │       opaco e punha um retângulo escuro atrás do número do workspace,    │
+   │       que sumia no fundo. Dentro de um tema, a mesma regra não alcança   │
+   │       o CSS da Waybar.                                                   │
+   │                                                                          │
+   │    2. RECARGA. O GTK3 lê esta folha UMA vez, quando o app abre. Um tema  │
+   │       nomeado, não: mudar `gtk-theme-name` faz todo app GTK3 aberto      │
+   │       reler o tema do disco. É isso que faz o SUPER+SHIFT+T repintar o   │
+   │       swappy e o nwg-look na hora, sem fechar nada.                      │
+   │                                                                          │
+   │  QUERO MEXER NO VISUAL DOS APPS GTK — ONDE?                              │
+   │      ~/.config/theme/apply.py, função `gerar_tema_gtk3()`.               │
+   │      Depois rode o apply.py (ou SUPER+SHIFT+T) para regerar.             │
+   │                                                                          │
+   │  As cores em si: ~/.config/theme/palettes.py                             │
+   ╰──────────────────────────────────────────────────────────────────────────╯ */
