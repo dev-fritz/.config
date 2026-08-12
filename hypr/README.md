@@ -18,7 +18,7 @@ order. Each topic lives in its own file under [`conf/`](conf/):
 |---|---|
 | [`conf/programs.lua`](conf/programs.lua) | default apps — the other modules read from here |
 | [`conf/monitors.lua`](conf/monitors.lua) | screen positions and which workspace lives on which |
-| [`conf/env.lua`](conf/env.lua) | environment variables (Wayland, Qt, GTK, NVIDIA) |
+| [`conf/env.lua`](conf/env.lua) | environment variables (Wayland, Qt, GTK, NVIDIA, newt) |
 | [`conf/look.lua`](conf/look.lua) | gaps, borders, rounding, shadow, blur |
 | [`conf/animations.lua`](conf/animations.lua) | easing curves and animation speeds |
 | [`conf/layouts.lua`](conf/layouts.lua) | dwindle / master / scrolling and misc options |

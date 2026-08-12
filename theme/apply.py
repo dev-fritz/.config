@@ -17,6 +17,7 @@ middle of it — they all point at the generated file:
     hypr/conf/colors.lua    (require)
     wlogout/colors.css      (@import)
     btop/themes/tema.theme  (color_theme = "tema")
+    newt/palette            (NEWT_COLORS_FILE, set in hypr/conf/env.lua)
     hyprlock.conf           (between markers)
     ~/.local/share/themes/  (GTK3 theme)
     gtk-4.0/colors.css      (libadwaita)
@@ -77,6 +78,61 @@ def escurecer(hexa: str, fator: float) -> str:
     """Multiplies the RGB channels by `fator`; 0.45 is much darker."""
     r, g, b = (int(hexa[i:i + 2], 16) for i in (0, 2, 4))
     return "".join(f"{min(255, max(0, round(c * fator))):02x}" for c in (r, g, b))
+
+
+def contraste(a: str, b: str) -> float:
+    """
+    Contrast ratio between two hex colors, from 1 (identical) to 21 (black on
+    white), by the WCAG formula. 4.5 is the threshold for body text.
+
+    Used where a pairing has to hold across all the variants: an accent that
+    reads well over the panel in one palette can be nearly the panel's own tone
+    in the next, and only the numbers catch that.
+    """
+    def relativa(hexa: str) -> float:
+        canais = []
+        for i in (0, 2, 4):
+            v = int(hexa[i:i + 2], 16) / 255
+            canais.append(v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4)
+        r, g, b = canais
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    claro, escuro = sorted((relativa(a), relativa(b)), reverse=True)
+    return (claro + 0.05) / (escuro + 0.05)
+
+
+def cores_ansi(p: dict[str, str], variante: str) -> dict[str, str]:
+    """
+    The sixteen terminal colors, under the names the terminal itself, slang and
+    newt all use for them.
+
+    The two ends of the ramp — `black` and `lightgray`/`white` — are not
+    decoration. Full-screen TUIs paint entire panels with them, black as the
+    background and white as the text, so black has to be the palette's dark end
+    and white its light end. Putting both on the same side, as happens if
+    `black` is picked to be visible over a dark terminal, leaves those programs
+    drawing text on a background of the same tone.
+
+    The roles swap between light and dark because the `surface*` ramp runs the
+    other way in a light palette: there `surface2` is the light grey and
+    `subtext1` the dark ink.
+    """
+    if IS_DARK[variante]:
+        preto, cinza = p["surface1"], p["surface2"]
+        claro, branco = p["subtext1"], p["text"]
+    else:
+        preto, cinza = p["subtext1"], p["subtext0"]
+        claro, branco = p["surface2"], p["surface1"]
+    return {
+        "black": preto, "gray": cinza,
+        "lightgray": claro, "white": branco,
+        "red": p["red"], "brightred": p["red"],
+        "green": p["green"], "brightgreen": p["green"],
+        "brown": p["yellow"], "yellow": p["yellow"],
+        "blue": p["blue"], "brightblue": p["blue"],
+        "magenta": p["pink"], "brightmagenta": p["pink"],
+        "cyan": p["teal"], "brightcyan": p["teal"],
+    }
 
 
 def cor_sombra(p: dict[str, str], variante: str) -> str:
@@ -157,11 +213,9 @@ def gerar_lua(p: dict[str, str], variante: str) -> str:
 
 def gerar_kitty(p: dict[str, str], variante: str) -> str:
     """The 16 terminal colors plus kitty's interface colors."""
-    escuro = IS_DARK[variante]
-    # In light themes "black" has to be genuinely dark, otherwise text in
-    # color0 vanishes into the background.
-    cor0 = p["subtext1"] if escuro else p["surface1"]
-    cor8 = p["subtext0"] if escuro else p["surface2"]
+    # The sixteen slots come from `cores_ansi`, shared with the newt palette so
+    # that both agree on which end of the ramp `black` is.
+    a = cores_ansi(p, variante)
     return f"""# {AVISO}
 # Variant: {variante}
 
@@ -203,30 +257,133 @@ mark3_background #{p['sapphire']}
 
 # ── The 16 terminal colors ───────────────────────────────────────────────
 # black
-color0 #{cor0}
-color8 #{cor8}
+color0 #{a['black']}
+color8 #{a['gray']}
 # red
-color1 #{p['red']}
-color9 #{p['red']}
+color1 #{a['red']}
+color9 #{a['brightred']}
 # green
-color2  #{p['green']}
-color10 #{p['green']}
+color2  #{a['green']}
+color10 #{a['brightgreen']}
 # yellow
-color3  #{p['yellow']}
-color11 #{p['yellow']}
+color3  #{a['brown']}
+color11 #{a['yellow']}
 # blue
-color4  #{p['blue']}
-color12 #{p['blue']}
+color4  #{a['blue']}
+color12 #{a['brightblue']}
 # magenta
-color5  #{p['pink']}
-color13 #{p['pink']}
+color5  #{a['magenta']}
+color13 #{a['brightmagenta']}
 # cyan
-color6  #{p['teal']}
-color14 #{p['teal']}
+color6  #{a['cyan']}
+color14 #{a['brightcyan']}
 # white
-color7  #{p['subtext1']}
-color15 #{p['subtext0']}
+color7  #{a['lightgray']}
+color15 #{a['white']}
 """
+
+
+def gerar_newt(p: dict[str, str], variante: str) -> str:
+    """
+    Palette for newt, the toolkit that draws nmtui, whiptail and friends.
+
+    This is the one generator that writes no hex. newt understands sixteen
+    color NAMES and nothing else, each one a slot in the terminal's palette —
+    so what actually colors nmtui is `gerar_kitty`, and what is decided here is
+    only which slot each part of the interface takes.
+
+    Without this file newt falls back to its built-in palette, which paints the
+    dialogs `black` on `lightgray`. That was written for the grey-on-blue
+    terminal of 1996; on a themed terminal those two slots are just the ends of
+    one ramp, and the text lands on a background of its own tone.
+
+    Two things are decided by measurement rather than by taste:
+
+    * which accent to use, since a palette's blue can be a light pastel in one
+      variant and nearly the panel's own tone in the next (`ACENTOS`);
+    * whether a label over that accent should be the panel color or the text
+      color, which depends on whether the accent came out light or dark.
+
+    Bright colors are deliberately absent from the right-hand side of every
+    pair. newt draws through slang, which turns a bright BACKGROUND into
+    blinking text on the Linux console — the one place where reaching nmtui is
+    likely to be the only way back onto the network.
+    """
+    a = cores_ansi(p, variante)
+    escuro = IS_DARK[variante]
+    fundo = "black" if escuro else "lightgray"   # panel, the darker/lighter end
+    texto = "lightgray" if escuro else "black"   # normal text, the other end
+    forte = "white" if escuro else "black"       # emphasized text
+    fraco = "gray"                               # disabled, fades into the panel
+
+    # Preference order, first one that stands out over the panel wins. The
+    # colors themselves are whatever the variant put in those slots.
+    ACENTOS = ("blue", "cyan", "magenta")
+    LEGIVEL = 4.5
+
+    def acento(*evitar: str) -> str:
+        pontos = [(contraste(a[nome], a[fundo]), nome)
+                  for nome in ACENTOS if nome not in evitar]
+        for pontuacao, nome in pontos:
+            if pontuacao >= LEGIVEL:
+                return nome
+        return max(pontos)[1]   # nothing clears the bar: take the best there is
+
+    principal = acento()             # frame, selected row, buttons
+    foco = acento(principal)         # what the keyboard is on right now
+
+    def sobre(nome: str) -> str:
+        """Panel or text color over `nome`, whichever pulls further away."""
+        return fundo if contraste(a[nome], a[fundo]) >= contraste(a[nome], a[texto]) else texto
+
+    pares = {
+        # The screen behind the dialogs.
+        "root":          (texto, fundo),
+        "roottext":      (texto, fundo),
+        "helpline":      (texto, fundo),
+
+        # The dialog frame.
+        "window":        (texto, fundo),
+        "border":        (principal, fundo),
+        "title":         (foco, fundo),
+        "shadow":        (fundo, fundo),
+
+        # Static text.
+        "label":         (texto, fundo),
+        "textbox":       (texto, fundo),
+        "acttextbox":    (forte, fundo),
+
+        # Buttons: the accent behind, and in front of it whichever side reads
+        # better over it.
+        "button":        (sobre(principal), principal),
+        "actbutton":     (sobre(foco), foco),
+        "compactbutton": (texto, fundo),
+
+        # Editable fields: brighter than the text around them, so it is clear
+        # where typing lands.
+        "entry":         (forte, fundo),
+        "disentry":      (fraco, fundo),
+
+        "checkbox":      (texto, fundo),
+        "actcheckbox":   (sobre(foco), foco),
+
+        # Lists. `actlistbox` and `actsellistbox` are the same row in two
+        # states that newt tells apart and the eye should not, so both take the
+        # accent and the highlight keeps its color from one screen to the next.
+        "listbox":       (texto, fundo),
+        "actlistbox":    (sobre(principal), principal),
+        "sellistbox":    (principal, fundo),
+        "actsellistbox": (sobre(principal), principal),
+
+        # Progress bars, which only use the background side.
+        "emptyscale":    ("", fundo),
+        "fullscale":     ("", principal),
+    }
+
+    # No comment header: newt's parser reads the file line by line as
+    # `key=fg,bg` and a stray line risks going through as a key.
+    return "\n".join(f"{chave}={frente},{tras}"
+                     for chave, (frente, tras) in pares.items()) + "\n"
 
 
 def gerar_cores_gtk(p: dict[str, str], variante: str, cabecalho: bool = True) -> str:
@@ -683,6 +840,7 @@ def aplicar(variante: str) -> list[str]:
     escrever(CONFIG / "kitty" / "theme.conf", gerar_kitty(p, variante)); feitos.append("kitty")
     escrever(CONFIG / "hypr" / "conf" / "colors.lua", gerar_lua(p, variante)); feitos.append("hyprland")
     escrever(CONFIG / "btop" / "themes" / "tema.theme", gerar_btop(p, variante)); feitos.append("btop")
+    escrever(CONFIG / "newt" / "palette", gerar_newt(p, variante)); feitos.append("newt")
 
     # ── GTK ───────────────────────────────────────────────────────────────
     # One theme per variant, in ~/.local/share/themes/. It is the theme NAME

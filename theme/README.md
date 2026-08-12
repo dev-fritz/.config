@@ -24,6 +24,7 @@ palettes.py  ──apply.py──┬─→ waybar/colors.css        (@import)
                          ├─→ kitty/theme.conf         (include)
                          ├─→ hypr/conf/colors.lua     (require)
                          ├─→ btop/themes/tema.theme   (color_theme)
+                         ├─→ newt/palette             (NEWT_COLORS_FILE)
                          ├─→ hyprlock.conf            (between markers)
                          ├─→ satty/config.toml        (between markers)
                          ├─→ ~/.local/share/themes/   (GTK3 theme)
@@ -72,6 +73,31 @@ Accents:
     lavender  mauve  pink  flamingo  rosewater
 ```
 
+## The sixteen terminal colors
+
+Whatever runs inside the terminal does not see the 26 roles, only the sixteen
+colors ANSI has had since the 1980s. `cores_ansi` in [`apply.py`](apply.py) is
+the translation between the two, and it is the same function that feeds
+kitty and the newt palette, so both agree on what each name means.
+
+The two ends of that ramp carry more weight than they look like they do.
+Full-screen TUIs — `nmtui`, `whiptail`, `dialog` — paint entire panels with
+`black` as the background and `white` as the text, so `black` has to be the
+palette's dark end and `white` its light end. Point both at the same side and
+those programs end up drawing text over a background of its own tone.
+
+`newt/palette` follows from that. It is the only generated file with no hex in
+it: newt only understands the sixteen names, so all it decides is which slot
+each part of a dialog takes. Which accent it picks is measured, not chosen —
+a palette's blue is a light pastel in one variant and nearly the panel's own
+tone in the next, so the generator takes the first accent that clears 4.5:1
+over the panel and then puts whichever side reads better on top of it.
+
+Light variants stay tighter than dark ones: their sixteen colors have no
+near-white, so a dialog lands around 2.9:1 instead of the 4.6–8.5:1 the dark
+variants reach. Legible, but they are not where these palettes are at their
+best.
+
 ## Adding a variant
 
 1. Copy a `PALETTES` block in [`palettes.py`](palettes.py) and fill in all 26 names.
@@ -87,7 +113,7 @@ Accents:
 | Waybar, swaync, Hyprland | libadwaita apps (colors; light/dark is instant) |
 | kitty (SIGUSR1) | wlogout, hyprlock |
 | Neovim (it watches the state file) | **btop** |
-| GTK3 apps (via the theme-name change) | |
+| GTK3 apps (via the theme-name change) | nmtui and other newt dialogs |
 
 The GTK3 trick is the name: each variant generates a theme with its own name,
 and it is the name **changing** that makes every open GTK3 app reread from disk.

@@ -19,7 +19,7 @@ hl.config({
 		-- Other useful values:
 		--   "grp:alt_shift_toggle"   switch layouts with Alt+Shift
 		--   "compose:ralt"           right AltGr becomes the compose key
-		kb_options = "caps:escape",
+		-- kb_options = "caps:escape",
 
 		-- Key repeat: wait 250ms, then repeat 40 times per second.
 		repeat_delay = 250,

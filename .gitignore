@@ -12,6 +12,7 @@ rofi/colors.rasi
 kitty/theme.conf
 hypr/conf/colors.lua
 btop/themes/tema.theme
+newt/palette
 
 # The active variant is machine state, not configuration.
 theme/current
