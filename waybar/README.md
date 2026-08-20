@@ -40,9 +40,11 @@ come from here: it comes from the `persistent` rules in
 [`../hypr/conf/monitors.lua`](../hypr/conf/monitors.lua).
 
 **Temperature by absolute path.** The module uses `hwmon-path-abs` pointing at
-`/sys/devices/platform/coretemp.0/hwmon` instead of `/sys/class/hwmon/hwmonN`.
-That `N` is assigned in driver load order and changes between reboots — the bar
-would end up showing the SSD or the battery temperature.
+the sensor's device directory (`/sys/devices/platform/coretemp.0/hwmon` on this
+machine) instead of `/sys/class/hwmon/hwmonN`. That `N` is assigned in driver
+load order and changes between reboots — the bar would end up showing the SSD
+or the battery temperature. The path itself is not written in `config.jsonc`;
+see [Hardware-specific settings](#hardware-specific-settings).
 
 **The scroll dispatcher uses Lua syntax.** Since the Hyprland config became
 Lua, `hyprctl dispatch workspace e+1` is a parse error and the scroll silently
@@ -91,10 +93,30 @@ is ever dead.
 
 ## Hardware-specific settings
 
-Two values are tied to this laptop and need changing on another machine:
+Two values differ from machine to machine, so neither is in `config.jsonc`:
 
-- `temperature.hwmon-path-abs` → `coretemp.0`, the i9-12900HX sensor
-- `backlight.device` → `nvidia_0`
+| Setting | This laptop | Elsewhere |
+|---|---|---|
+| `temperature.hwmon-path-abs` | `coretemp.0` (Intel) | `k10temp` on AMD, `cpu_thermal` on ARM |
+| `backlight.device` | `nvidia_0` | `intel_backlight`, `amdgpu_bl0`, or none on a desktop |
 
-Find the right values with `ls /sys/class/backlight/` and
-`ls /sys/class/hwmon/*/name`.
+They live in **`hardware.jsonc`**, written by
+[`../install.sh`](../install.sh) from what it finds in `/sys` and pulled in
+through the `"include"` key at the top of `config.jsonc`. Waybar merges
+included files into the main one, and keys present in the main file win — which
+is why those two are deliberately absent from it.
+
+The file is gitignored: it describes the computer, not the configuration.
+Regenerate it after changing hardware:
+
+```sh
+~/.config/install.sh --only=hardware
+```
+
+To find the values by hand: `ls /sys/class/backlight/` and
+`cat /sys/class/hwmon/*/name`.
+
+> A missing `hardware.jsonc` is only a warning in the log (`Unable to find
+> resource file`) — the bar still starts, with the temperature reading whatever
+> sensor Waybar picks first and the brightness module doing the same. The
+> generated `colors.css` is the file a fresh clone really cannot start without.

@@ -40,13 +40,22 @@ hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
 -- `sh -c`, which reads no rc file. Set on the session, every child inherits.
 hl.env("NEWT_COLORS_FILE", os.getenv("HOME") .. "/.config/newt/palette")
 
--- ── NVIDIA ───────────────────────────────────────────────────────
+-- ── Graphics ─────────────────────────────────────────────────────
 
--- Recommended by the Hyprland wiki to avoid black screens and freezes with
--- the proprietary driver. Safe to comment out on nouveau or Intel-only.
-hl.env("LIBVA_DRIVER_NAME", "nvidia") -- video acceleration
-hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
-hl.env("NVD_BACKEND", "direct")
+-- The GPU variables are deliberately NOT here.
+--
+-- LIBVA_DRIVER_NAME is "nvidia" on one machine, "iHD" on an Intel laptop and
+-- "radeonsi" on an AMD desktop, and __GLX_VENDOR_LIBRARY_NAME only makes sense
+-- where the NVIDIA driver is installed. This file is identical on every
+-- machine, so anything that depends on the hardware would be wrong on half of
+-- them.
+--
+-- They live in conf/hardware.lua, which ~/.config/install.sh writes from what
+-- it detects and hyprland.lua loads right after this file. That file is
+-- gitignored, like the generated colors.
+--
+-- After swapping a graphics card, regenerate it with:
+--     ~/.config/install.sh --only=hardware
 
 -- Runs Electron apps (VS Code, Discord, Spotify) on native Wayland, which
 -- fixes blurry scaling on high-density screens.

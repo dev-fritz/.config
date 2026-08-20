@@ -18,7 +18,7 @@ order. Each topic lives in its own file under [`conf/`](conf/):
 |---|---|
 | [`conf/programs.lua`](conf/programs.lua) | default apps — the other modules read from here |
 | [`conf/monitors.lua`](conf/monitors.lua) | screen positions and which workspace lives on which |
-| [`conf/env.lua`](conf/env.lua) | environment variables (Wayland, Qt, GTK, NVIDIA, newt) |
+| [`conf/env.lua`](conf/env.lua) | environment variables (Wayland, Qt, GTK, newt) |
 | [`conf/look.lua`](conf/look.lua) | gaps, borders, rounding, shadow, blur |
 | [`conf/animations.lua`](conf/animations.lua) | easing curves and animation speeds |
 | [`conf/layouts.lua`](conf/layouts.lua) | dwindle / master / scrolling and misc options |
@@ -27,6 +27,7 @@ order. Each topic lives in its own file under [`conf/`](conf/):
 | [`conf/windowrules.lua`](conf/windowrules.lua) | window, workspace and layer rules |
 | [`conf/autostart.lua`](conf/autostart.lua) | what starts with the session |
 | `conf/colors.lua` | **generated** by `theme/apply.py` — do not edit |
+| `conf/hardware.lua` | **generated** by `../install.sh` — the GPU variables of this machine |
 
 Outside `conf/`:
 
@@ -39,6 +40,29 @@ Outside `conf/`:
 The order in `hyprland.lua` matters: `programs` comes first because `keybinds`
 and `autostart` read from it, and `look` comes before `animations` because the
 animations depend on `animations.enabled`.
+
+## What adapts to the machine
+
+Two things here are not the same on every computer, and neither is hardcoded.
+
+**The GPU variables.** `LIBVA_DRIVER_NAME` is `nvidia` on this laptop, `iHD` on
+an Intel one and `radeonsi` on AMD, and `__GLX_VENDOR_LIBRARY_NAME` only means
+anything where the NVIDIA driver is installed. They live in
+`conf/hardware.lua`, which [`../install.sh`](../install.sh) generates from the
+PCI devices it finds, and `hyprland.lua` loads with `pcall` — a clone that has
+never run the installer just starts without them.
+
+```sh
+~/.config/install.sh --only=hardware   # rewrite it after swapping a card
+```
+
+**The monitor layout.** [`conf/monitors.lua`](conf/monitors.lua) knows this
+laptop's three screens, but it applies each entry only when that output is
+really connected *and* really supports that mode — read from
+`/sys/class/drm/card*-<output>/{status,modes}` while the config is parsed.
+Anything that does not match falls through to the catch-all rule at the bottom
+of the file: preferred mode, placed to the right of the others. The same file
+therefore works on a single-screen desktop without being edited.
 
 ## Applying changes
 
@@ -202,6 +226,7 @@ hyprctl hyprsunset profile      # back to following the schedule
 | Package | For | Without it |
 |---|---|---|
 | `hyprsunset` | scheduled blue-light filter | autostart skips it silently |
+| `nvidia-prime` | `prime-run` on a hybrid laptop | no way to send one app to the discrete GPU |
 | `hypridle` | idle lock and suspend | the screen never sleeps or locks on its own |
 | `pavucontrol` | graphical mixer | Waybar falls back to `wpctl status` |
 | `blueman` | Bluetooth manager | Waybar falls back to `bluetoothctl` |
