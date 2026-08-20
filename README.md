@@ -28,6 +28,12 @@
 
 ## Highlights
 
+**One command on a fresh machine.** `install.sh` reads the hardware out of
+`/sys` — GPU vendor and generation, CPU, battery, sensors, backlight, radios —
+and installs the driver that card actually needs, generates the two configs
+that differ per machine and pulls the whole desktop up. The same clone works on
+this NVIDIA laptop and on a box with integrated graphics.
+
 **One palette, the whole desktop.** No config file has a hex value written in
 the middle of it. Colors live in a single Python file, and one script generates
 a color file per application and tells each one to reload. `SUPER + SHIFT + T`
@@ -61,6 +67,8 @@ requires it.
 | Terminal greeter | fastfetch | [`fastfetch/`](fastfetch/) |
 | Git TUI | lazygit | [`lazygit/`](lazygit/) |
 | System-wide theming | custom script | [`theme/`](theme/) |
+| Login shell | zsh + oh-my-zsh | [`zsh/`](zsh/) |
+| Installation | custom script | [`install/`](install/) |
 
 ## Theming
 
@@ -146,45 +154,65 @@ wherever focus happens to be.
 
 ## Installation
 
-> These are personal dotfiles. Read before running — two settings are pinned to
-> this specific laptop, see [Notes](#notes).
+> These are personal dotfiles, and the installer touches `/etc` on an NVIDIA
+> machine. Read [`install/README.md`](install/README.md) before running it —
+> or run it with `--dry-run` first, which prints every command and every
+> generated file without changing anything.
 
 ```sh
-git clone https://github.com/<user>/dotfiles ~/.config
+git clone https://github.com/dev-fritz/.config.git ~/dotfiles
+~/dotfiles/install.sh
 ```
 
-**Core packages:**
+That is the whole thing on a freshly formatted Arch: the script moves the
+repository into `~/.config` (backing up whatever was there), installs the
+packages, picks the graphics driver from the card it finds, writes the two
+machine-specific config files, links the shell config, enables the services and
+generates the colors.
 
 ```sh
-sudo pacman -S hyprland hyprlock hyprpolkitagent waybar kitty neovim \
-               rofi-wayland swaync btop fastfetch lazygit \
-               grim slurp satty wl-clipboard cliphist \
-               pipewire pipewire-pulse wireplumber playerctl brightnessctl \
-               xdg-desktop-portal-hyprland xdg-desktop-portal-gtk \
-               ttf-space-mono-nerd python ripgrep fd yazi
+./install.sh --detect      # what it thinks this machine is, then exit
+./install.sh --dry-run     # a full run that changes nothing
+./install.sh --yes         # unattended
+./install.sh --help        # every option
 ```
 
-**Recommended:**
+### What adapts to the machine
+
+Nothing about the hardware is written down in this repository. It is read from
+`/sys` at install time:
+
+| Detected | What changes |
+|---|---|
+| GPU vendor and generation | `nvidia-open-dkms`, a frozen AUR branch, Mesa for AMD/Intel, or software rendering — plus the matching `LIBVA_DRIVER_NAME` for the session |
+| hybrid graphics | `nvidia-prime`, and a hint for rendering on the discrete card |
+| CPU vendor | `intel-ucode` or `amd-ucode` |
+| battery / chassis | power profiles, audio firmware, NVIDIA suspend units |
+| CPU sensor, backlight | the Waybar temperature and brightness modules |
+| bluetooth, wifi | the stacks and their services |
+| installed kernels | headers for each, so the DKMS driver builds for all of them |
+| btrfs, EFI, virtual machine | filesystem tools, boot tools, software rendering |
+
+The two files this produces — `hypr/conf/hardware.lua` and
+`waybar/hardware.jsonc` — are gitignored, like the generated colors: they
+describe the computer, not the configuration.
 
 ```sh
-sudo pacman -S hypridle hyprsunset zsh-autosuggestions zsh-syntax-highlighting \
-               pavucontrol blueman networkmanager papirus-icon-theme
+./install.sh --only=hardware    # regenerate them after a hardware change
 ```
 
-**From the AUR:**
+### Doing it by hand
 
-```sh
-paru -S awww wlogout
-```
-
-**Then generate the color files:**
+The package lists are in [`install/pkg/`](install/pkg/), one per group, with a
+comment on each line saying what breaks without it. After installing them, the
+one step nothing works without:
 
 ```sh
 ~/.config/theme/apply.py
 ```
 
-Nothing works before that step — every config imports a generated file that
-does not exist in a fresh clone.
+Every config imports a generated color file that does not exist in a fresh
+clone.
 
 ## Keybindings
 
@@ -215,6 +243,8 @@ does not exist in a fresh clone.
 
 ```
 .
+├── install.sh     one-command setup for a freshly formatted machine
+├── install/       package lists, hardware detection and the install steps
 ├── hypr/          compositor, lock screen, blue-light filter, helper scripts
 │   ├── conf/      one module per topic, loaded by hyprland.lua
 │   └── scripts/   screenshot, clipboard, wallpaper, theme picker
@@ -228,27 +258,31 @@ does not exist in a fresh clone.
 ├── satty/         screenshot editor
 ├── btop/          resource monitor
 ├── fastfetch/     terminal greeter
-└── lazygit/       git TUI
+├── lazygit/       git TUI
+└── zsh/           the shell config, linked to ~/.zshrc
 ```
 
-Generated color files are gitignored — they are derived from the palette, not
-sources. See [`.gitignore`](.gitignore).
+Generated files are gitignored — the color files because they are derived from
+the palette, and `hypr/conf/hardware.lua` and `waybar/hardware.jsonc` because
+they describe the machine rather than the configuration. See
+[`.gitignore`](.gitignore).
 
 ## Notes
 
-**Hardware-specific settings.** Two values in
-[`waybar/config.jsonc`](waybar/config.jsonc) are tied to this machine and need
-changing elsewhere:
+**Hardware-specific settings are generated, not written.** The CPU temperature
+sensor, the backlight device and the GPU environment variables all differ
+between machines, so they live in two files the installer writes and git
+ignores: `waybar/hardware.jsonc` and `hypr/conf/hardware.lua`. Rebuild them
+with `./install.sh --only=hardware`, or write them by hand — the formats are
+documented in [`waybar/README.md`](waybar/README.md) and
+[`hypr/README.md`](hypr/README.md).
 
-- `temperature.hwmon-path-abs` → `coretemp.0`, the i9-12900HX sensor
-- `backlight.device` → `nvidia_0`
-
-Find the right values with `ls /sys/class/backlight/` and
-`ls /sys/class/hwmon/*/name`.
-
-**NVIDIA.** [`hypr/conf/env.lua`](hypr/conf/env.lua) sets the variables the
-Hyprland wiki recommends for the proprietary driver. Safe to comment out on
-Intel-only or nouveau.
+**The monitor layout checks itself.**
+[`hypr/conf/monitors.lua`](hypr/conf/monitors.lua) holds this laptop's three
+screens, but each entry is applied only if that output exists and supports that
+mode — read from `/sys/class/drm` while the config is parsed. On any other
+machine the entries fall through to a catch-all rule instead of pinning a
+resolution the screen does not have.
 
 **Nothing locks the screen automatically.** `hyprlock` is configured and bound
 to `SUPER + L`, but no idle daemon triggers it. Install `hypridle` and write a
