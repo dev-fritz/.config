@@ -213,7 +213,7 @@ hyprctl hyprsunset profile      # back to following the schedule
 | `hyprpolkitagent` | password prompt for privileged actions |
 | `xdg-desktop-portal-hyprland` | screen sharing, file pickers |
 | `xdg-desktop-portal-gtk` | the GTK dialogs the portal uses |
-| `kitty` `firefox` `yazi` `rofi-wayland` | the apps in `conf/programs.lua` |
+| `kitty` `firefox` `yazi` `rofi` | the apps in `conf/programs.lua` |
 | `waybar` `swaync` `wlogout` | bar, notifications, power menu |
 | `awww` (AUR) | wallpaper daemon |
 | `grim` `slurp` `satty` `wl-clipboard` | screenshot pipeline |

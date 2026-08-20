@@ -24,7 +24,9 @@ sddm                        # login screen; the Hyprland session comes from the
 
 # ── Desktop shell ──────────────────────────────────────────────────────────
 waybar                      # status bar (waybar/)
-rofi                        # launcher, clipboard, wallpaper and theme pickers
+rofi                        # launcher, clipboard, wallpaper and theme pickers;
+                            #   2.0 runs on Wayland natively, so the old
+                            #   rofi-wayland fork is no longer needed
 swaync                      # notification daemon and control centre (swaync/)
 wlogout                     # power menu, SUPER + X (wlogout/) — AUR
 awww                        # wallpaper daemon, started in conf/autostart.lua

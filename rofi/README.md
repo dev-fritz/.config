@@ -73,7 +73,7 @@ rofi -show drun
 
 | Package | For | Required |
 |---|---|---|
-| `rofi-wayland` | the program (plain `rofi` is X11 only) | yes |
+| `rofi` | the program — 2.0 speaks Wayland natively, the `rofi-wayland` fork is gone | yes |
 | `adwaita-icon-theme` | the application icons | yes |
 | `ttf-space-mono-nerd` | the font and the mode label icons | yes |
 | `papirus-icon-theme` | a more complete icon set | no |

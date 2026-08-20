@@ -138,7 +138,7 @@ Firefox follows the system light/dark setting as long as its own theme is set to
 |---|---|---|
 | `python` | both scripts | yes |
 | `glib2` | the `gsettings` call that notifies GTK apps | yes |
-| `rofi-wayland` | the `SUPER + SHIFT + T` picker | no |
+| `rofi` | the `SUPER + SHIFT + T` picker | no |
 | `librsvg` | rendering the palette card above | no |
 
 `apply.py` does not break when an application is missing: every reload goes
