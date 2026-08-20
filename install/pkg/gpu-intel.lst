@@ -1,0 +1,7 @@
+# Intel — the i915/xe kernel drivers are built in; this is the userspace side.
+mesa                        # OpenGL
+vulkan-intel                # ANV, the Vulkan driver
+intel-media-driver          # VA-API on Broadwell (2014) and newer
+libva-intel-driver          # VA-API on anything older than that
+vulkan-icd-loader
+vulkan-mesa-layers

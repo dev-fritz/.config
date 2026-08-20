@@ -1,0 +1,28 @@
+# Apps — the graphical programs used day to day.
+#
+# Nothing here is required by the dotfiles: skip the group with
+# `--groups=core,dev,extras` and the desktop still works.
+
+# ── Browser ────────────────────────────────────────────────────────────────
+firefox                     # SUPER + B (hypr/conf/programs.lua)
+
+# ── Communication ──────────────────────────────────────────────────────────
+discord
+telegram-desktop
+
+# ── Documents and notes ────────────────────────────────────────────────────
+obsidian
+onlyoffice-bin              # AUR
+
+# ── Media ──────────────────────────────────────────────────────────────────
+spotify-launcher            # keeps the official client updated itself
+mpv                         # video player
+obs-studio                  # screen recording and streaming
+
+# ── Desktop odds and ends ──────────────────────────────────────────────────
+fragments                   # torrent client
+pavucontrol                 # graphical mixer, right click on the volume module
+blueman                     # Bluetooth manager, click on the Bluetooth module
+nm-connection-editor        # graphical network editor, click on the network one
+nwg-look                    # GTK theme picker, for checking what apply.py wrote
+gnome-disk-utility          # partitions and SMART

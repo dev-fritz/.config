@@ -1,0 +1,6 @@
+# No supported GPU found: a virtual machine, a server, or a card so old that
+# only the generic modesetting driver applies. Hyprland runs on llvmpipe here —
+# slowly, but it runs.
+mesa
+vulkan-swrast               # software Vulkan, so anything asking for it starts
+vulkan-icd-loader

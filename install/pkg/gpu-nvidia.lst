@@ -1,0 +1,9 @@
+# NVIDIA — userspace. The kernel module package is chosen by the installer from
+# the card's PCI id (see nvidia_branch_for in install/lib/detect.sh), because
+# the answer differs per generation: nvidia-open-dkms on Turing and newer,
+# nvidia-570xx-dkms from the AUR on Maxwell/Pascal/Volta.
+nvidia-utils                # the driver's userspace half
+libva-nvidia-driver         # VA-API, what LIBVA_DRIVER_NAME=nvidia points at
+egl-wayland                 # EGLStream, still needed by a few Wayland apps
+nvidia-settings             # the control panel, handy for fan and power limits
+vulkan-icd-loader           # Vulkan entry point

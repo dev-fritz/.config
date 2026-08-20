@@ -1,0 +1,29 @@
+# Dev — toolchains and command line tools.
+#
+# Neovim installs its language servers through Mason, which needs the runtimes
+# below to be present: rust-analyzer comes from rustup, gopls from go, and the
+# JavaScript servers from node (already in core, since the editor is core).
+
+# ── Toolchains ─────────────────────────────────────────────────────────────
+go
+rustup                      # manages the toolchain; run `rustup default stable`
+clang                       # C/C++ compiler and clangd
+uv                          # Python environments and tools
+pnpm
+bun
+luarocks                    # Lua rocks, used by a few Neovim plugins
+tree-sitter-cli             # nvim-treesitter builds parsers with it
+
+# ── Containers ─────────────────────────────────────────────────────────────
+docker
+docker-buildx
+docker-compose
+
+# ── Command line ───────────────────────────────────────────────────────────
+tmux
+fzf
+openssh
+sshpass
+openbsd-netcat
+lazysql                     # database TUI — AUR
+supabase-bin                # Supabase CLI — AUR

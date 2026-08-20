@@ -1,0 +1,8 @@
+# AMD — everything is in the kernel already (amdgpu); these are the userspace
+# libraries Mesa needs. VA-API and VDPAU used to be separate packages
+# (libva-mesa-driver, mesa-vdpau); Mesa absorbed both, so `mesa` covers them.
+mesa                        # OpenGL, VA-API and VDPAU in one package
+vulkan-radeon               # RADV, the Vulkan driver
+vulkan-icd-loader           # Vulkan entry point
+vulkan-mesa-layers          # the validation and overlay layers
+libva-utils                 # vainfo, for checking that decoding actually works

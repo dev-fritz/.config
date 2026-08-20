@@ -1,0 +1,3 @@
+# Bluetooth — only installed when a controller is present in /sys/class/bluetooth.
+bluez                       # the stack
+bluez-utils                 # bluetoothctl, which the Waybar module calls

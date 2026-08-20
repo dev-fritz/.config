@@ -1,0 +1,96 @@
+# Core — everything these dotfiles actually need.
+#
+# This list is not optional: every package here is referenced by a config file,
+# a keybinding or a script in this repository. Removing one leaves a visibly
+# broken desktop, not a missing feature.
+#
+# One name per line, `#` starts a comment. Whether a name comes from the
+# official repositories or from the AUR is decided at install time, not here.
+
+# ── Compositor and session ─────────────────────────────────────────────────
+hyprland                    # the compositor itself (hypr/hyprland.lua)
+hyprlock                    # lock screen, SUPER + L
+hypridle                    # idle daemon (no config shipped, see hypr/README.md)
+hyprsunset                  # blue-light filter (hypr/hyprsunset.conf)
+hyprpolkitagent             # password prompts for privileged actions
+xdg-desktop-portal-hyprland # screen sharing and file pickers under Wayland
+xdg-desktop-portal-gtk      # the GTK half of the same, for file dialogs
+polkit                      # the permission framework the agent talks to
+qt6-wayland                 # QT_QPA_PLATFORM=wayland (hypr/conf/env.lua)
+qt5-wayland                 # same, for the Qt5 apps that are still around
+qt6ct                       # QT_QPA_PLATFORMTHEME=qt6ct (hypr/conf/env.lua)
+sddm                        # login screen; the Hyprland session comes from the
+                            #   hyprland package, so no extra file is needed
+
+# ── Desktop shell ──────────────────────────────────────────────────────────
+waybar                      # status bar (waybar/)
+rofi                        # launcher, clipboard, wallpaper and theme pickers
+swaync                      # notification daemon and control centre (swaync/)
+wlogout                     # power menu, SUPER + X (wlogout/) — AUR
+awww                        # wallpaper daemon, started in conf/autostart.lua
+libnotify                   # notify-send, used by every script for errors
+
+# ── Terminal, editor and TUIs ──────────────────────────────────────────────
+kitty                       # terminal (kitty/)
+neovim                      # editor (nvim/)
+btop                        # resource monitor (btop/)
+fastfetch                   # terminal greeter (fastfetch/)
+lazygit                     # git TUI (lazygit/)
+yazi                        # file manager, opened by SUPER + E
+libnewt                     # whiptail and the palette nmtui reads (newt/)
+
+# ── Clipboard and screenshots ──────────────────────────────────────────────
+grim                        # takes the screenshot
+slurp                       # selects the region
+satty                       # annotates it (satty/)
+swappy                      # fallback annotator if satty is missing
+wl-clipboard                # wl-copy / wl-paste
+cliphist                    # clipboard history behind SUPER + V
+
+# ── Audio, brightness, media keys ──────────────────────────────────────────
+pipewire                    # audio server
+pipewire-pulse              # PulseAudio compatibility (Waybar's module)
+pipewire-alsa               # ALSA compatibility
+pipewire-jack               # JACK compatibility
+wireplumber                 # session manager — provides wpctl
+gst-plugin-pipewire         # GStreamer apps through PipeWire
+playerctl                   # the mpris module and the media keys
+brightnessctl               # brightness keys and the Waybar scroll
+
+# ── Network ────────────────────────────────────────────────────────────────
+networkmanager              # nmcli/nmtui, behind the Waybar network module
+
+# ── Theming engine (theme/apply.py) ────────────────────────────────────────
+python                      # apply.py and the weather script
+glib2                       # gsettings, which repaints running GTK apps
+dconf                       # where gsettings stores the choice
+gsettings-desktop-schemas   # the schema apply.py writes into
+gtk3                        # GTK3 theme generated into ~/.local/share/themes
+gtk4                        # libadwaita colors (gtk-4.0/colors.css)
+papirus-icon-theme          # icon theme referenced by the generated GTK theme
+adwaita-icon-theme          # fallback icons, so no app shows blanks
+
+# ── Fonts ──────────────────────────────────────────────────────────────────
+ttf-space-mono-nerd         # the font every config asks for by name
+ttf-nerd-fonts-symbols      # the glyphs in the bar, menus and lock screen
+ttf-nerd-fonts-symbols-mono #   same, monospaced variant
+noto-fonts                  # general text coverage
+noto-fonts-emoji            # emoji, otherwise they render as boxes
+noto-fonts-cjk              # Chinese, Japanese and Korean
+ttf-dejavu                  # a serif/sans fallback that always exists
+ttf-liberation              # metric-compatible with Arial/Times, for documents
+
+# ── Shell ──────────────────────────────────────────────────────────────────
+zsh                         # the login shell (zsh/.zshrc)
+zsh-autosuggestions         # history suggestions, sourced by .zshrc
+zsh-syntax-highlighting     # colors the line as it is typed, sourced by .zshrc
+
+# ── Tools the scripts call ─────────────────────────────────────────────────
+ffmpeg                      # wallpaper thumbnails (hypr/scripts/wallpaper.sh)
+jq                          # JSON in the shell scripts
+ripgrep                     # Neovim's grep and the file pickers
+fd                          # file search for the same
+git                         # required by lazy.nvim and by this repository
+unzip                       # Mason unpacks language servers with it
+nodejs                      # several Mason language servers are JavaScript
+npm                         #   and this is what installs them

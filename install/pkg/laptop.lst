@@ -1,0 +1,4 @@
+# Laptop — only installed when a battery or a portable chassis is detected.
+power-profiles-daemon       # power profiles, and what GNOME-style tools expect
+upower                      # battery state on the bus, used by several apps
+sof-firmware                # audio firmware for modern Intel laptops

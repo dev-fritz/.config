@@ -1,0 +1,19 @@
+# Extras — system utilities that are not part of the desktop.
+#
+# btrfs-progs and efibootmgr are only installed when the machine actually uses
+# btrfs or boots in EFI mode; that check lives in install/steps/30-packages.sh,
+# not here.
+
+# ── Printing ───────────────────────────────────────────────────────────────
+cups                        # print server
+cups-pk-helper              # lets a normal user add a printer
+system-config-printer       # the graphical printer dialog
+
+# ── Security and system ────────────────────────────────────────────────────
+ufw                         # firewall — installed, NOT enabled (see 70-services)
+zram-generator              # compressed swap in RAM
+rsync
+unzip
+zip
+fuse2                       # AppImages and some file managers
+man-db                      # `man` pages
