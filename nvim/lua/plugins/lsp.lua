@@ -163,7 +163,7 @@ return {
     "mason-org/mason.nvim",
     cmd = { "Mason", "MasonInstall", "MasonUpdate", "MasonLog" },
     keys = {
-      { "<leader>cm", "<cmd>Mason<CR>", desc = "Mason (manage LSP servers)" },
+      { "<leader>cM", "<cmd>Mason<CR>", desc = "Mason (manage LSP servers)" },
     },
     build = ":MasonUpdate",
     opts = {

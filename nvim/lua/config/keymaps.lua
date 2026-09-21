@@ -5,12 +5,15 @@
 -- Leader group convention:
 --   <leader>f  find/file
 --   <leader>g  git
---   <leader>b  buffer
+--   <leader>B  buffer (the bare <leader>b opens a new buffer, NvChad style)
 --   <leader>c  code (LSP, formatting, actions)
 --   <leader>s  search (grep, symbols, diagnostics)
---   <leader>t  terminal / toggle
+--   <leader>t  terminal / theme
 --   <leader>u  UI toggles
---   <leader>x  diagnostics and lists (trouble, quickfix)
+--   <leader>l  lists and diagnostics (trouble, quickfix)
+--   <leader>x  close the current buffer (NvChad style, not a group)
+--
+-- The NvChad keys live in the "NvChad" section at the bottom of this file.
 
 local map = vim.keymap.set
 
@@ -26,8 +29,8 @@ map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true
 -- Save from any mode with Ctrl-s.
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<CR><Esc>", { desc = "Save file" })
 
--- Quick save and quit.
-map("n", "<leader>w", "<cmd>w<CR>", { desc = "Save" })
+-- Quick quit. Saving is <C-s>: <leader>w is the which-key prefix (NvChad's
+-- <leader>wk / <leader>wK), so it cannot also be a mapping of its own.
 map("n", "<leader>q", "<cmd>q<CR>", { desc = "Close window" })
 map("n", "<leader>Q", "<cmd>qa<CR>", { desc = "Quit Neovim" })
 
@@ -52,10 +55,12 @@ map("n", "<leader>|", "<C-w>v", { desc = "Vertical split" })
 
 map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
 map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
-map("n", "<leader>bb", "<cmd>e #<CR>", { desc = "Switch to the last buffer" })
+map("n", "<leader>Bb", "<cmd>e #<CR>", { desc = "Switch to the last buffer" })
 
--- <leader>bd and <leader>bo live in plugins/snacks.lua: Snacks.bufdelete closes
--- a buffer without disturbing the window layout, which :bdelete does not.
+-- <Tab> / <S-Tab> also cycle buffers (bufferline, plugins/ui.lua), <leader>x
+-- closes the current one and <leader>Bd / <leader>Bo live in plugins/snacks.lua:
+-- Snacks.bufdelete closes a buffer without disturbing the window layout, which
+-- :bdelete does not.
 
 -- ── Editing ──────────────────────────────────────────────────────
 
@@ -106,9 +111,9 @@ map("n", "[d", diag_jump(-1), { desc = "Previous diagnostic" })
 map("n", "]e", diag_jump(1, ERROR), { desc = "Next error" })
 map("n", "[e", diag_jump(-1, ERROR), { desc = "Previous error" })
 
-map("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Line diagnostics (float)" })
+map("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics (float)" })
 
--- The list views (<leader>xx, xq, xl) belong to trouble.nvim — see plugins/trouble.lua.
+-- The list views (<leader>lx, lq, ll) belong to trouble.nvim — see plugins/trouble.lua.
 
 -- ── UI toggles (<leader>u) ───────────────────────────────────────
 
@@ -127,6 +132,7 @@ end
 local theme = function() return require("config.theme") end
 
 map("n", "<leader>ut", function() theme().pick() end, { desc = "Switch theme (with preview)" })
+map("n", "<leader>th", function() theme().pick() end, { desc = "Switch theme (with preview)" }) -- NvChad's key
 map("n", "<leader>uB", function() theme().toggle_background() end, { desc = "Toggle light/dark background" })
 
 map("n", "<leader>uw", toggle_opt("wrap", "Line wrap"), { desc = "Toggle line wrap" })
@@ -147,5 +153,51 @@ end, { desc = "Toggle diagnostics" })
 
 -- ── Terminal mode (toggleterm has its own maps) ──────────────────
 
--- Leave terminal mode with Esc-Esc; a single Esc is used by TUIs like lazygit.
+-- Leave terminal mode with <C-x> (NvChad) or Esc-Esc; a single Esc is left
+-- alone, because TUIs like lazygit need it.
+map("t", "<C-x>", "<C-\\><C-n>", { desc = "Leave terminal mode" })
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Leave terminal mode" })
+
+-- ── NvChad ───────────────────────────────────────────────────────
+--
+-- The keys below come from NvChad's default mappings, so muscle memory built
+-- there works here. The pieces that need a plugin live in that plugin's file:
+--
+--   <A-i> <A-h> <A-v>          terminals                plugins/terminal.lua
+--   <leader>h <leader>v <leader>pt                      plugins/terminal.lua
+--   <C-n> <leader>e            file tree                plugins/editor.lua
+--   <leader>ch <leader>wk <leader>wK  cheatsheet        plugins/editor.lua
+--   <leader>ff fa fw fb fh fo fz ma cm gt th  pickers   plugins/snacks.lua
+--   <leader>x                  close buffer             plugins/snacks.lua
+--   <Tab> <S-Tab>              cycle buffers            plugins/ui.lua
+--   <leader>fm                 format the file          plugins/formatting.lua
+
+-- ";" opens the command line, so : never needs Shift.
+map("n", ";", ":", { desc = "Command mode" })
+
+-- "jk" leaves insert mode without reaching for Esc.
+map("i", "jk", "<Esc>", { desc = "Leave insert mode" })
+
+-- Yank the whole file to the system clipboard.
+map("n", "<C-c>", "<cmd>%y+<CR>", { desc = "Copy the whole file" })
+
+-- Move around in insert mode without leaving it. <C-h> stops being Backspace
+-- and <C-e> stops being "copy the char below", which is the NvChad trade-off.
+map("i", "<C-b>", "<Esc>^i", { desc = "Beginning of the line" })
+map("i", "<C-e>", "<End>", { desc = "End of the line" })
+map("i", "<C-h>", "<Left>", { desc = "Left" })
+map("i", "<C-l>", "<Right>", { desc = "Right" })
+map("i", "<C-j>", "<Down>", { desc = "Down" })
+map("i", "<C-k>", "<Up>", { desc = "Up" })
+
+-- Comment the line or the selection. `remap = true` is required: gcc and gc
+-- are themselves mappings (built into Neovim 0.10+), not raw commands.
+map("n", "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
+map("x", "<leader>/", "gc", { desc = "Toggle comment", remap = true })
+
+-- Line numbers.
+map("n", "<leader>n", "<cmd>set nu!<CR>", { desc = "Toggle line numbers" })
+map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "Toggle relative numbers" })
+
+-- A new empty buffer. The buffer group moved to <leader>B so this key is free.
+map("n", "<leader>b", "<cmd>enew<CR>", { desc = "New buffer" })

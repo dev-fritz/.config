@@ -2,7 +2,8 @@
 
 Neovim configuration. Built from scratch — not a distribution (LazyVim, NvChad
 and friends). The plugin manager is `lazy.nvim`, but every plugin was picked and
-configured by hand.
+configured by hand. The keymaps follow NvChad's, so the muscle memory carries
+over without carrying the distribution.
 
 ![nvim](.assets/preview.png)
 
@@ -44,23 +45,52 @@ mappings plugins register point at the wrong key.
 Vim's defaults still apply; the list below is what was added. Pressing
 `<leader>` alone opens `which-key`, which shows the rest.
 
+The set follows **NvChad's defaults**, so its muscle memory works here (the LSP
+mappings are this config's own — see `lua/plugins/lsp.lua`).
+
+### NvChad keys
+
 | Key | Action |
 |---|---|
-| `<leader>w` / `<leader>q` / `<leader>Q` | save / close window / quit |
+| `Alt + i` | toggle the floating terminal |
+| `Alt + h` / `Alt + v` | toggle the horizontal / vertical terminal |
+| `<leader>h` / `<leader>v` | a brand new horizontal / vertical terminal |
+| `<leader>pt` | pick one of the open terminals |
+| `Ctrl + x` *(terminal)* | leave terminal mode |
+| `Ctrl + n` / `<leader>e` | file tree: toggle / focus |
+| `Tab` / `Shift + Tab` | next / previous buffer |
+| `<leader>b` / `<leader>x` | new buffer / close the current one |
+| `<leader>/` | comment the line or the selection |
+| `;` / `jk` | command mode / leave insert mode |
+| `Ctrl + s` / `Ctrl + c` | save / copy the whole file |
+| `Ctrl + b e h j k l` *(insert)* | move without leaving insert mode |
+| `<leader>n` / `<leader>rn` | toggle line / relative numbers |
+| `<leader>ff` `fa` `fw` `fb` `fh` `fo` `fz` | files, all files, grep, buffers, help, recent, in this buffer |
+| `<leader>ma` / `<leader>cm` / `<leader>gt` | marks / git commits / git status |
+| `<leader>th` | switch theme, with preview |
+| `<leader>fm` | format the file |
+| `<leader>ch` / `<leader>wK` / `<leader>wk` | cheatsheet / every keymap / look up a sequence |
+
+### The rest
+
+| Key | Action |
+|---|---|
+| `<leader>q` / `<leader>Q` | close window / quit |
 | `Esc` | clear search highlight |
 | `Ctrl + h j k l` | move between windows |
 | `Ctrl + arrows` | resize the window |
 | `<leader>-` / `<leader>\|` | horizontal / vertical split |
 | `Shift + h` / `Shift + l` | previous / next buffer |
-| `<leader>bb` | back to the last buffer |
+| `<leader>B` | buffer group (`Bb` last buffer, `Bd` close, `Bp` pin…) |
+| `<leader>l` | lists and diagnostics (Trouble) |
 | `J` / `K` *(visual)* | move the selection |
 | `<` / `>` *(visual)* | indent, keeping the selection |
 | `p` *(visual)* | paste without yanking the replaced text |
 | `Ctrl + d` / `Ctrl + u` | half page, centered |
 | `n` / `N` | next/previous match, centered |
 | `]d` / `[d` | next / previous diagnostic |
-| `<leader>xd` | line diagnostics in a float |
-| `<leader>ut` | switch theme, with preview |
+| `<leader>ld` | line diagnostics in a float |
+| `<leader>ut` | switch theme, with preview (same as `<leader>th`) |
 | `<leader>uB` | toggle light/dark background |
 
 ## System theme integration
@@ -69,8 +99,8 @@ Neovim **watches** `~/.local/state/nvim/theme.json`. When you switch variant
 with `SUPER + SHIFT + T`, an already-open instance recolors on its own — no
 command, no restart.
 
-`<leader>ut` goes the other way: it changes only the editor's theme, with a
-preview.
+`<leader>th` (or `<leader>ut`) goes the other way: it changes only the editor's
+theme, with a preview.
 
 ## Things that are not obvious
 

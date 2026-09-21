@@ -104,18 +104,22 @@ return {
   },
 
   -- ── bufferline, the buffer tabs ──────────────────────────────────────
-  -- <S-h> / <S-l> cycle buffers (set in config/keymaps.lua) and
-  -- <leader>1..9 jump straight to tab N.
+  -- <Tab> / <S-Tab> cycle buffers (NvChad), <S-h> / <S-l> do the same (set in
+  -- config/keymaps.lua) and <leader>1..9 jump straight to tab N.
+  -- Note: mapping <Tab> takes over <C-i>, so the forward jump of the jumplist
+  -- is gone — that is NvChad's trade-off, and <C-o> still goes back.
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     keys = {
-      { "<leader>bp", "<cmd>BufferLineTogglePin<CR>", desc = "Pin or unpin buffer" },
-      { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<CR>", desc = "Close unpinned buffers" },
-      { "<leader>bl", "<cmd>BufferLineCloseRight<CR>", desc = "Close buffers to the right" },
-      { "<leader>bh", "<cmd>BufferLineCloseLeft<CR>", desc = "Close buffers to the left" },
-      { "<leader>b<", "<cmd>BufferLineMovePrev<CR>", desc = "Move buffer left" },
-      { "<leader>b>", "<cmd>BufferLineMoveNext<CR>", desc = "Move buffer right" },
+      { "<Tab>", "<cmd>BufferLineCycleNext<CR>", desc = "Next buffer" },
+      { "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", desc = "Previous buffer" },
+      { "<leader>Bp", "<cmd>BufferLineTogglePin<CR>", desc = "Pin or unpin buffer" },
+      { "<leader>BP", "<cmd>BufferLineGroupClose ungrouped<CR>", desc = "Close unpinned buffers" },
+      { "<leader>Bl", "<cmd>BufferLineCloseRight<CR>", desc = "Close buffers to the right" },
+      { "<leader>Bh", "<cmd>BufferLineCloseLeft<CR>", desc = "Close buffers to the left" },
+      { "<leader>B<", "<cmd>BufferLineMovePrev<CR>", desc = "Move buffer left" },
+      { "<leader>B>", "<cmd>BufferLineMoveNext<CR>", desc = "Move buffer right" },
     },
     opts = {
       options = {

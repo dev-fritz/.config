@@ -22,17 +22,18 @@ return {
       delay = function(ctx) return ctx.plugin and 0 or 300 end,
       -- Group names, which turn "<leader>f?" into a labeled menu.
       spec = {
-        { "<leader>b", group = "buffer" },
+        { "<leader>B", group = "buffer" },
         { "<leader>c", group = "code / LSP" },
         { "<leader>d", group = "debug (DAP)" },
         { "<leader>dg", group = "debug: language tests" },
         { "<leader>f", group = "files" },
         { "<leader>g", group = "git" },
         { "<leader>gh", group = "hunk" },
+        { "<leader>l", group = "lists / diagnostics" },
         { "<leader>s", group = "search" },
-        { "<leader>t", group = "terminal" },
+        { "<leader>t", group = "terminal / theme" },
         { "<leader>u", group = "UI toggles" },
-        { "<leader>x", group = "diagnostics / lists" },
+        { "<leader>w", group = "which-key" },
         { "[", group = "previous" },
         { "]", group = "next" },
         { "g", group = "go to" },
@@ -41,6 +42,10 @@ return {
     -- stylua: ignore
     keys = {
       { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "Keymaps for this buffer" },
+      -- NvChad: <leader>ch is the cheatsheet, <leader>wK the full keymap list.
+      { "<leader>ch", function() require("which-key").show({ global = true }) end, desc = "Cheatsheet (all keymaps)" },
+      { "<leader>wK", function() require("which-key").show({ global = true }) end, desc = "All keymaps" },
+      { "<leader>wk", function() require("which-key").show({ keys = vim.fn.input("Which-key: "), loop = true }) end, desc = "Look up a key sequence" },
     },
   },
 
@@ -81,7 +86,7 @@ return {
       { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous TODO" },
       { "<leader>st", function() Snacks.picker.todo_comments() end, desc = "List project TODOs" },
       { "<leader>sT", function() Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" } }) end, desc = "List only TODO/FIX" },
-      { "<leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "TODOs in the Trouble panel" },
+      { "<leader>lt", "<cmd>Trouble todo toggle<CR>", desc = "TODOs in the Trouble panel" },
     },
   },
 
@@ -148,7 +153,7 @@ return {
         map("n", "<leader>gD", function() gs.diffthis("~") end, "Diff against the last commit")
 
         -- ── Toggles ────────────────────────────────────────────────────
-        map("n", "<leader>gt", gs.toggle_current_line_blame, "Toggle inline blame")
+        map("n", "<leader>ub", gs.toggle_current_line_blame, "Toggle inline blame")
 
         -- ── Text object: "ih" is the hunk under the cursor ─────────────
         map({ "o", "x" }, "ih", gs.select_hunk, "Select hunk")
@@ -168,7 +173,9 @@ return {
       "MunifTanjim/nui.nvim",
     },
     keys = {
-      { "<leader>e", "<cmd>Neotree toggle reveal<CR>", desc = "File explorer" },
+      -- NvChad: <C-n> opens and closes the tree, <leader>e jumps into it.
+      { "<C-n>", "<cmd>Neotree toggle reveal<CR>", desc = "File explorer (toggle)" },
+      { "<leader>e", "<cmd>Neotree focus reveal<CR>", desc = "File explorer (focus)" },
       { "<leader>E", "<cmd>Neotree toggle git_status<CR>", desc = "Explorer: git changes" },
       { "<leader>fe", "<cmd>Neotree toggle reveal<CR>", desc = "File explorer" },
     },
@@ -255,7 +262,7 @@ return {
     -- stylua: ignore
     keys = {
       { "-", "<cmd>Oil<CR>", desc = "Open the parent directory (oil)" },
-      { "<leader>fo", function() require("oil").toggle_float() end, desc = "Oil in a floating window" },
+      { "<leader>fO", function() require("oil").toggle_float() end, desc = "Oil in a floating window" },
     },
   },
 

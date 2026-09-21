@@ -20,6 +20,8 @@ return {
   -- stylua: ignore
   keys = {
     { "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, mode = { "n", "x" }, desc = "Format file or selection" },
+    -- NvChad's name for the same thing.
+    { "<leader>fm", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, mode = { "n", "x" }, desc = "Format file or selection" },
     { "<leader>uF", function() vim.cmd(vim.g.disable_autoformat and "FormatEnable" or "FormatDisable") end, desc = "Toggle format on save" },
   },
 

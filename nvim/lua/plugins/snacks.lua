@@ -124,6 +124,16 @@ return {
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Config files" },
     { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
 
+    -- NvChad names for the same pickers, so the muscle memory carries over.
+    { "<leader>fa", function() Snacks.picker.files({ hidden = true, ignored = true }) end, desc = "All files (hidden and ignored)" },
+    { "<leader>fw", function() Snacks.picker.grep() end, desc = "Grep the project (live grep)" },
+    { "<leader>fh", function() Snacks.picker.help() end, desc = "Help pages" },
+    { "<leader>fo", function() Snacks.picker.recent() end, desc = "Recent files (oldfiles)" },
+    { "<leader>fz", function() Snacks.picker.lines() end, desc = "Search the current buffer" },
+    { "<leader>ma", function() Snacks.picker.marks() end, desc = "Marks" },
+    { "<leader>cm", function() Snacks.picker.git_log() end, desc = "Git commits" },
+    { "<leader>gt", function() Snacks.picker.git_status() end, desc = "Git status" },
+
     -- ── Content search ────────────────────────────────────────
     { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep the project" },
     { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Grep the word or selection", mode = { "n", "x" } },
@@ -160,8 +170,9 @@ return {
     { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Open in the browser (GitHub)", mode = { "n", "x" } },
 
     -- ── Buffers ───────────────────────────────────────────────
-    { "<leader>bd", function() Snacks.bufdelete() end, desc = "Close buffer (keeps the layout)" },
-    { "<leader>bo", function() Snacks.bufdelete.other() end, desc = "Close the other buffers" },
+    { "<leader>x", function() Snacks.bufdelete() end, desc = "Close buffer (keeps the layout)" },
+    { "<leader>Bd", function() Snacks.bufdelete() end, desc = "Close buffer (keeps the layout)" },
+    { "<leader>Bo", function() Snacks.bufdelete.other() end, desc = "Close the other buffers" },
 
     -- ── Utilities ─────────────────────────────────────────────
     { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename file (notifies the LSP)" },

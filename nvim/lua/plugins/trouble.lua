@@ -7,7 +7,7 @@
 -- interface.
 --
 -- Picker versus Trouble: use Snacks.picker (<leader>s) when you want to find
--- one thing and go to it, and Trouble (<leader>x) when you want to walk
+-- one thing and go to it, and Trouble (<leader>l) when you want to walk
 -- through an entire list.
 --
 -- Inside the panel: <CR> opens, o/O split, q closes, ? shows help, s sorts,
@@ -64,13 +64,13 @@ return {
 
   -- stylua: ignore
   keys = {
-    { "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", desc = "Project diagnostics" },
-    { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", desc = "Diagnostics for this file" },
-    { "<leader>xs", "<cmd>Trouble symbols toggle<CR>", desc = "File structure (outline)" },
-    { "<leader>xr", "<cmd>Trouble lsp toggle win.position=right<CR>", desc = "References and definitions (LSP)" },
-    { "<leader>xq", "<cmd>Trouble qflist toggle<CR>", desc = "Quickfix list" },
-    { "<leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Location list" },
-    { "<leader>xc", "<cmd>Trouble close<CR>", desc = "Close the panel" },
+    { "<leader>lx", "<cmd>Trouble diagnostics toggle<CR>", desc = "Project diagnostics" },
+    { "<leader>lX", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", desc = "Diagnostics for this file" },
+    { "<leader>ls", "<cmd>Trouble symbols toggle<CR>", desc = "File structure (outline)" },
+    { "<leader>lr", "<cmd>Trouble lsp toggle win.position=right<CR>", desc = "References and definitions (LSP)" },
+    { "<leader>lq", "<cmd>Trouble qflist toggle<CR>", desc = "Quickfix list" },
+    { "<leader>ll", "<cmd>Trouble loclist toggle<CR>", desc = "Location list" },
+    { "<leader>lc", "<cmd>Trouble close<CR>", desc = "Close the panel" },
 
     -- Walk the list without leaving the file; the panel can even be closed.
     { "]x", function() require("trouble").next({ skip_groups = true, jump = true }) end, desc = "Next Trouble item" },
